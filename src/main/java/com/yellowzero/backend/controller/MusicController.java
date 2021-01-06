@@ -24,14 +24,14 @@ public class MusicController {
     @Autowired
     MusicTagService musicTagService;
 
-    @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/tags", method = {RequestMethod.GET, RequestMethod.POST})
     public JsonResult list() {
         List<MusicTag> tags = musicTagService.getList();
         return new JsonResult(Status.SUCCESS, tags);
     }
 
-    @RequestMapping(value = "/tag", method = {RequestMethod.GET, RequestMethod.POST})
-    public JsonResult type(@RequestParam(name = "id") int id) {
+    @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
+    public JsonResult type(@RequestParam(name = "tag_id") int id) {
         return new JsonResult(Status.SUCCESS, musicService.getListByTag(id));
     }
 }
