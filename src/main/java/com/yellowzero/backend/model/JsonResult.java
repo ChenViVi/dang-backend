@@ -15,7 +15,7 @@ public class JsonResult {
     /**
      * 返回的数据
      */
-    private Object result;
+    private Object data;
 
     /**
      * 只返回状态码
@@ -52,35 +52,35 @@ public class JsonResult {
      *
      * @param code   状态码
      * @param msg    信息
-     * @param result 数据
+     * @param data 数据
      */
-    public JsonResult(Integer code, String msg, Object result) {
+    public JsonResult(Integer code, String msg, Object data) {
         this.code = code;
         this.msg = msg;
-        this.result = result;
+        this.data = data;
     }
 
     /**
      * 不返回数据的构造方法
      *
      * @param responseStatus Status
-     * @param result 数据
+     * @param data 数据
      */
-    public JsonResult(Status responseStatus, Object result) {
+    public JsonResult(Status responseStatus, Object data) {
         this.code = responseStatus.getCode();
         this.msg = responseStatus.getMsg();
-        this.result = result;
+        this.data = data;
     }
 
     /**
      * 返回状态码和数据
      *
      * @param code   状态码
-     * @param result 数据
+     * @param data 数据
      */
-    public JsonResult(Integer code, Object result) {
+    public JsonResult(Integer code, Object data) {
         this.code = code;
-        this.result = result;
+        this.data = data;
     }
 
 
@@ -100,11 +100,11 @@ public class JsonResult {
         this.msg = msg;
     }
 
-    public Object getResult() {
-        return result;
+    public Object getData() {
+        return data;
     }
 
-    public void setResult(Object result) {
-        this.result = result;
+    public void setData(Object data) {
+        this.data = data;
     }
 }
