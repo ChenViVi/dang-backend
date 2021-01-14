@@ -15,7 +15,17 @@ public class MusicServiceImpl implements MusicService {
     private MusicRepository musicTagRepository;
 
     @Override
+    public List<Music> getList() {
+        return musicTagRepository.findAll();
+    }
+
+    @Override
     public List<Music> getListByTag(int id) {
         return musicTagRepository.findByTag(id);
+    }
+
+    @Override
+    public void update(Music music) {
+        musicTagRepository.save(music);
     }
 }

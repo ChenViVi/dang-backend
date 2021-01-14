@@ -1,7 +1,9 @@
 package com.yellowzero.backend.controller;
 
+import cn.hutool.core.io.FileUtil;
 import com.yellowzero.backend.model.JsonResult;
 import com.yellowzero.backend.model.Status;
+import com.yellowzero.backend.model.entity.Music;
 import com.yellowzero.backend.model.entity.MusicTag;
 import com.yellowzero.backend.repository.MusicRepository;
 import com.yellowzero.backend.repository.MusicTagRepository;
@@ -33,5 +35,17 @@ public class MusicController {
     @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
     public JsonResult type(@RequestParam(name = "tag_id") int id) {
         return new JsonResult(Status.SUCCESS, musicService.getListByTag(id));
+    }
+
+    @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
+    public JsonResult test() {
+        for (Music music : musicService.getList()) {
+            String fileName = FileUtil.getPrefix(music.getLink());
+            String ext = FileUtil.extName(music.getLink());
+            if (ext.equals("aac"))
+                music.setLink(fileName + ".mp3");
+            musicService.update(music);
+        }
+        return new JsonResult(Status.SUCCESS);
     }
 }
