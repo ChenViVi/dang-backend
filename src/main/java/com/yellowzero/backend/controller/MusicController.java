@@ -36,13 +36,4 @@ public class MusicController {
     public JsonResult type(@RequestParam(name = "tag_id") int id) {
         return new JsonResult(Status.SUCCESS, musicService.getListByTag(id));
     }
-
-    @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
-    public JsonResult test() {
-        for (Music music : musicService.getList()) {
-            music.setUrl("http://yellowzero.wblnb.com/"+music.getUrl());
-            musicService.update(music);
-        }
-        return new JsonResult(Status.SUCCESS);
-    }
 }
