@@ -43,7 +43,8 @@ public class MusicController {
             String fileName = FileUtil.getPrefix(music.getUrl());
             String ext = FileUtil.extName(music.getUrl());
             if (ext.equals("aac"))
-                music.setLink(fileName + ".mp3");
+                music.setUrl(fileName + ".mp3");
+            music.setLink(FileUtil.getPrefix(music.getLink()));
             musicService.update(music);
         }
         return new JsonResult(Status.SUCCESS);
