@@ -40,8 +40,8 @@ public class MusicController {
     @RequestMapping(value = "/test", method = {RequestMethod.GET, RequestMethod.POST})
     public JsonResult test() {
         for (Music music : musicService.getList()) {
-            String fileName = FileUtil.getPrefix(music.getLink());
-            String ext = FileUtil.extName(music.getLink());
+            String fileName = FileUtil.getPrefix(music.getUrl());
+            String ext = FileUtil.extName(music.getUrl());
             if (ext.equals("aac"))
                 music.setLink(fileName + ".mp3");
             musicService.update(music);
