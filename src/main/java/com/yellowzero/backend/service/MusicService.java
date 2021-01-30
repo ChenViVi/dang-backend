@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface MusicService {
     List<Music> getList();
-    List<Music> getListByTag(int id);
+    List<Music> getList(int tagId);
     void update(Music music);
 }

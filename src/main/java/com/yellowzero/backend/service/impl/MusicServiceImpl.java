@@ -4,6 +4,7 @@ import com.yellowzero.backend.model.entity.Music;
 import com.yellowzero.backend.repository.MusicRepository;
 import com.yellowzero.backend.service.MusicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,20 +13,20 @@ import java.util.List;
 public class MusicServiceImpl implements MusicService {
 
     @Autowired
-    private MusicRepository musicTagRepository;
+    private MusicRepository musicRepository;
 
     @Override
     public List<Music> getList() {
-        return musicTagRepository.findAll();
+        return musicRepository.findAll(Sort.by("id").descending());
     }
 
     @Override
-    public List<Music> getListByTag(int id) {
-        return musicTagRepository.findByTag(id);
+    public List<Music> getList(int tagId) {
+        return musicRepository.findByTag(tagId);
     }
 
     @Override
     public void update(Music music) {
-        musicTagRepository.save(music);
+        musicRepository.save(music);
     }
 }
