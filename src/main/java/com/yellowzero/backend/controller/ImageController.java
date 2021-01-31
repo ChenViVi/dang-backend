@@ -25,7 +25,7 @@ public class ImageController {
     ImageTagService imageTagService;
 
     @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
-    public JsonResult list( @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name="size",defaultValue = "18") int size) {
+    public JsonResult list( @RequestParam(name = "page", defaultValue = "0") int page, @RequestParam(name="size",defaultValue = "20") int size) {
         return new JsonResult(Status.SUCCESS, imageService.getList(page, size));
     }
 

@@ -10,7 +10,8 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String weiboId;
-    private String url;
+    private String urlSmall;
+    private String urlLarge;
     @ManyToOne(targetEntity = UserWeibo.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_weibo_id", insertable = false, updatable = false)
     private UserWeibo user;
@@ -34,12 +35,20 @@ public class Image {
         this.weiboId = weiboId;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUrlSmall() {
+        return urlSmall;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrlSmall(String urlSmall) {
+        this.urlSmall = urlSmall;
+    }
+
+    public String getUrlLarge() {
+        return urlLarge;
+    }
+
+    public void setUrlLarge(String urlLarge) {
+        this.urlLarge = urlLarge;
     }
 
     public UserWeibo getUser() {
