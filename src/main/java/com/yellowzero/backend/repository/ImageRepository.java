@@ -10,6 +10,6 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
     @Query(value = "SELECT * FROM image " +
             "JOIN image_tag_join ON image.id = image_tag_join.image_id " +
             "JOIN user_weibo ON image.user_weibo_id = user_weibo.id " +
-            "WHERE image_tag_join.tag_id = :tagId ORDER BY image.id DESC", nativeQuery = true)
+            "WHERE image_tag_join.tag_id = :tagId", nativeQuery = true)
     Page<Image> findByTag(int tagId, Pageable pageable);
 }

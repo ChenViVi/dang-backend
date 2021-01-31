@@ -14,6 +14,9 @@ public class Image {
     @ManyToOne(targetEntity = UserWeibo.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_weibo_id", insertable = false, updatable = false)
     private UserWeibo user;
+    @Transient
+    private List<ImageTag> tags;
+    private String text;
 
     public int getId() {
         return id;
@@ -45,5 +48,21 @@ public class Image {
 
     public void setUser(UserWeibo user) {
         this.user = user;
+    }
+
+    public List<ImageTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<ImageTag> tags) {
+        this.tags = tags;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }
