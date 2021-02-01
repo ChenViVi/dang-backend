@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class DBUtil {
-    public static void saveImageTag(String name) {
+    public static ImageTag saveImageTag(String name) {
         try {
             List<ImageTag> tags = Db.use().find(Entity.create("image_tag")
                     .set("name", name), ImageTag.class);
@@ -20,8 +20,12 @@ public class DBUtil {
                 Db.use().insert(Entity.create("image_tag")
                         .set("name", name));
             }
+            List<ImageTag> resultTags = Db.use().find(Entity.create("image_tag")
+                    .set("name", name), ImageTag.class);
+            return resultTags.get(0);
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -89,6 +93,19 @@ public class DBUtil {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    public static void saveImageAndTags(List<Image> images, List<String> names, boolean saveImage) {
+        for (Image image : images) {
+            if (saveImage)
+                saveImage(image);
+            for (String name : names) {
+                ImageTag tag = saveImageTag(name);
+                if (tag == null)
+                    continue;
+                saveImageTagJoin(image.getId(), tag.getId());
+            }
         }
     }
 }

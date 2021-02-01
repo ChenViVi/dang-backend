@@ -11,7 +11,7 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String pid;
-    private String weiboId;
+    private long weiboId;
     private String urlSmall;
     private String urlLarge;
     @ManyToOne(targetEntity = UserWeibo.class, fetch = FetchType.EAGER)
@@ -37,11 +37,11 @@ public class Image {
         this.pid = pid;
     }
 
-    public String getWeiboId() {
+    public long getWeiboId() {
         return weiboId;
     }
 
-    public void setWeiboId(String weiboId) {
+    public void setWeiboId(long weiboId) {
         this.weiboId = weiboId;
     }
 

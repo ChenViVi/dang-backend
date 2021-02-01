@@ -6,8 +6,11 @@ import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.yellowzero.backend.model.entity.Image;
+import com.yellowzero.backend.model.entity.UserWeibo;
 import com.yellowzero.backend.util.DBUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageTask implements Task {
@@ -44,17 +47,43 @@ public class ImageTask implements Task {
             for (int weiboIndex = 0; weiboIndex < cardsJson.size(); weiboIndex++) {
                 JSONObject cardJson = cardsJson.getJSONObject(weiboIndex);
                 JSONObject blogJson = cardJson.getJSONObject("mblog");
+                long id, repostId = blogJson.getLong("id");
+                String text = blogJson.getString("text");
+                JSONObject userJson;
                 JSONArray pics;
                 JSONObject repostJson = cardJson.getJSONObject("retweeted_status");
                 //如果是原创微博
-                if (repostJson == null)
+                if (repostJson == null) {
+                    userJson = blogJson.getJSONObject("user");
                     pics = blogJson.getJSONArray("pics");
-                else
+                }
+                else {
+                    repostId = repostJson.getLong("id");
+                    userJson = repostJson.getJSONObject("user");
                     pics = repostJson.getJSONArray("pics");
+                }
                 if (pics == null || pics.size() == 0)
                     continue;
-                long id = blogJson.getLong("id");
-                String text = blogJson.getString("text");
+                //保存微博用户
+                if (userJson == null)
+                    continue;
+                UserWeibo user = new UserWeibo();
+                user.setId(userJson.getLong("id"));
+                user.setName(userJson.getString("screen_name"));
+                user.setAvatar(userJson.getString("profile_image_url"));
+                DBUtil.saveUserWeibo(user);
+                ArrayList<Image> images = new ArrayList<>();
+                for (int picIndex = 0; picIndex < pics.size(); picIndex++) {
+                    JSONObject pic = pics.getJSONObject(picIndex);
+                    Image image = new Image();
+                    image.setPid(pic.getString("pid"));
+                    image.setWeiboId(repostId);
+                    image.setUrlSmall(pic.getString("url"));
+                    image.setUrlLarge(pic.getJSONObject("large").getString("url"));
+                    image.setUser(user);
+                    image.setText(text);
+                    images.add(image);
+                }
                 List<String> tags = ReUtil.findAll(regexTag, text, 0);
                 boolean hasMainTag = false;
                 for (int tagIndex = 0; tagIndex < tags.size(); tagIndex++) {
@@ -65,8 +94,7 @@ public class ImageTask implements Task {
                 }
                 if (hasMainTag) {
                     //保存正文中的tag
-                    for (String tag : tags)
-                        DBUtil.saveImageTag(tag);
+                    DBUtil.saveImageAndTags(images, tags, true);
                     //解析每条微博评论
                     int commentPage = 1;
                     while (true) {
@@ -88,8 +116,10 @@ public class ImageTask implements Task {
                             String commentText = commentListJson.getJSONObject(commentIndex).getString("text");
                             List<String> commentTags = ReUtil.findAll(regexTag, commentText, 0);
                             //保存评论中的tag
-                            for (String tag : commentTags)
-                                DBUtil.saveImageTag(tag.replaceAll("#", ""));
+                            for (int commentTagIndex = 0; commentTagIndex < commentTags.size(); commentTagIndex++) {
+                                commentTags.set(commentTagIndex, commentTags.get(commentTagIndex).replaceAll("#", ""));
+                            }
+                            DBUtil.saveImageAndTags(images, commentTags, false);
                         }
                     }
                 }
