@@ -2,6 +2,7 @@ package com.yellowzero.backend.model.entity;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "image")
@@ -82,5 +83,17 @@ public class Image {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Image)) return false;
+        Image image = (Image) o;
+        return Objects.equals(getPid(), image.getPid()) &&
+                Objects.equals(getWeiboId(), image.getWeiboId()) &&
+                Objects.equals(getUrlSmall(), image.getUrlSmall()) &&
+                Objects.equals(getUrlLarge(), image.getUrlLarge()) &&
+                Objects.equals(getText(), image.getText());
     }
 }

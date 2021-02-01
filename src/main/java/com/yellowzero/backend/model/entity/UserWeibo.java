@@ -1,6 +1,7 @@
 package com.yellowzero.backend.model.entity;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name="user_weibo")
@@ -33,6 +34,16 @@ public class UserWeibo {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserWeibo)) return false;
+        UserWeibo userWeibo = (UserWeibo) o;
+        return getId() == userWeibo.getId() &&
+                Objects.equals(getName(), userWeibo.getName()) &&
+                Objects.equals(getAvatar(), userWeibo.getAvatar());
     }
 }
 
