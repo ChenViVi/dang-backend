@@ -9,6 +9,7 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private String pid;
     private String weiboId;
     private String urlSmall;
     private String urlLarge;
@@ -25,6 +26,14 @@ public class Image {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getPid() {
+        return pid;
+    }
+
+    public void setPid(String pid) {
+        this.pid = pid;
     }
 
     public String getWeiboId() {
