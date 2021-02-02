@@ -24,7 +24,6 @@ public class ImageTask implements Task {
 
         int listPage = 1;
         while (true) {
-            System.out.println("page = " + listPage);
             String listUrl = String.format("https://m.weibo.cn/api/container/getIndex?type=uid&value=%d&containerid=%d&page=%d",
                     uid,
                     containerId, listPage++);
@@ -35,7 +34,6 @@ public class ImageTask implements Task {
                     .header("X-Requested-With", "XMLHttpRequest")
                     .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
                     .execute().body();
-            System.out.println(listResponse);
             JSONObject listJson = JSON.parseObject(listResponse);
             if (listJson.getInteger("ok") != 1)
                 return;
@@ -74,7 +72,6 @@ public class ImageTask implements Task {
                         repostText = repostJson.getString("text");
                     }
                     if (pics == null || pics.size() == 0) {
-                        System.out.println("repostText=" + repostText);
                         continue;
                     }
                     //保存微博用户
