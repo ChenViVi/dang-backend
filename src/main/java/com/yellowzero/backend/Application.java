@@ -10,7 +10,7 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        CronUtil.schedule("*/* 2 * * * *", new ImageTask());
+        CronUtil.schedule("*/0 2 * * * *", new ImageTask());
         CronUtil.start();
     }
 }
