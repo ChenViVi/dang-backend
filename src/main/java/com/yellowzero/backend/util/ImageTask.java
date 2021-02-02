@@ -29,7 +29,7 @@ public class ImageTask implements Task {
                     containerId, listPage++);
             String listResponse = HttpRequest.
                     get(listUrl)
-                    .header("Referer", String.format("https://m.weibo.cn/u/%s", uid))
+                    .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                     .header("MWeibo-Pwa","1")
                     .header("X-Requested-With", "XMLHttpRequest")
                     .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
@@ -76,8 +76,8 @@ public class ImageTask implements Task {
                         continue;
                     String detailUrl = String.format("https://m.weibo.cn/statuses/show?id=%d", repostId);
                     String detailResponse = HttpRequest.
-                            get(listUrl)
-                            .header("Referer", String.format("https://m.weibo.cn/u/%s", uid))
+                            get(detailUrl)
+                            .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                             .header("MWeibo-Pwa","1")
                             .header("X-Requested-With", "XMLHttpRequest")
                             .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
