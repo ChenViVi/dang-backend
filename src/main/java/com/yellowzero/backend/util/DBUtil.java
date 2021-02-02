@@ -20,16 +20,29 @@ public class DBUtil {
                 Db.use().insert(Entity.create("image_tag")
                         .set("name", name));
             }
-            List<ImageTag> resultTags = Db.use().find(Entity.create("image_tag")
+            List<ImageTag> result = Db.use().find(Entity.create("image_tag")
                     .set("name", name), ImageTag.class);
-            return resultTags.get(0);
+            return result.get(0);
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static void saveImage(Image image) {
+    public static Image findImage(String pid) {
+        try {
+            List<Image> result = Db.use().find(Entity.create("image")
+                    .set("pid", pid), Image.class);
+            if (result == null || result.size() ==0)
+                return null;
+            return result.get(0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static Image saveImage(Image image) {
         try {
             List<Image> images = Db.use().find(Entity.create("image")
                     .set("pid", image.getPid()), Image.class);
@@ -41,6 +54,9 @@ public class DBUtil {
                         .set("url_small", image.getUrlSmall())
                         .set("url_large", image.getUrlLarge())
                         .set("text", image.getText()));
+                List<Image> result = Db.use().find(Entity.create("image")
+                        .set("pid", image.getPid()), Image.class);
+                return findImage(image.getPid());
             } else {
                 Image dbImage = images.get(0);
                 if (!image.equals(dbImage))
@@ -52,9 +68,12 @@ public class DBUtil {
                                     .set("url_large", image.getUrlLarge())
                                     .set("text", image.getText()),
                             Entity.create("image").set("id", dbImage.getId()));
+                image.setId(dbImage.getId());
+                return image;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
     }
 
@@ -99,10 +118,12 @@ public class DBUtil {
     public static void saveImageAndTags(List<Image> images, List<String> names, boolean saveImage) {
         for (Image image : images) {
             if (saveImage)
-                saveImage(image);
+                image = saveImage(image);
+            else
+                image = findImage(image.getPid());
             for (String name : names) {
                 ImageTag tag = saveImageTag(name);
-                if (tag == null)
+                if (tag == null || image == null)
                     continue;
                 saveImageTagJoin(image.getId(), tag.getId());
             }

@@ -1,4 +1,4 @@
-package com.yellowzero.backend;
+package com.yellowzero.backend.util;
 
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.cron.task.Task;
@@ -8,7 +8,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yellowzero.backend.model.entity.Image;
 import com.yellowzero.backend.model.entity.UserWeibo;
-import com.yellowzero.backend.util.DBUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,43 +46,7 @@ public class ImageTask implements Task {
             for (int weiboIndex = 0; weiboIndex < cardsJson.size(); weiboIndex++) {
                 JSONObject cardJson = cardsJson.getJSONObject(weiboIndex);
                 JSONObject blogJson = cardJson.getJSONObject("mblog");
-                long id, repostId = blogJson.getLong("id");
                 String text = blogJson.getString("text");
-                JSONObject userJson;
-                JSONArray pics;
-                JSONObject repostJson = cardJson.getJSONObject("retweeted_status");
-                //如果是原创微博
-                if (repostJson == null) {
-                    userJson = blogJson.getJSONObject("user");
-                    pics = blogJson.getJSONArray("pics");
-                }
-                else {
-                    repostId = repostJson.getLong("id");
-                    userJson = repostJson.getJSONObject("user");
-                    pics = repostJson.getJSONArray("pics");
-                }
-                if (pics == null || pics.size() == 0)
-                    continue;
-                //保存微博用户
-                if (userJson == null)
-                    continue;
-                UserWeibo user = new UserWeibo();
-                user.setId(userJson.getLong("id"));
-                user.setName(userJson.getString("screen_name"));
-                user.setAvatar(userJson.getString("profile_image_url"));
-                DBUtil.saveUserWeibo(user);
-                ArrayList<Image> images = new ArrayList<>();
-                for (int picIndex = 0; picIndex < pics.size(); picIndex++) {
-                    JSONObject pic = pics.getJSONObject(picIndex);
-                    Image image = new Image();
-                    image.setPid(pic.getString("pid"));
-                    image.setWeiboId(repostId);
-                    image.setUrlSmall(pic.getString("url"));
-                    image.setUrlLarge(pic.getJSONObject("large").getString("url"));
-                    image.setUser(user);
-                    image.setText(text);
-                    images.add(image);
-                }
                 List<String> tags = ReUtil.findAll(regexTag, text, 0);
                 boolean hasMainTag = false;
                 for (int tagIndex = 0; tagIndex < tags.size(); tagIndex++) {
@@ -93,10 +56,52 @@ public class ImageTask implements Task {
                         hasMainTag = true;
                 }
                 if (hasMainTag) {
+                    long repostId = blogJson.getLong("id");
+                    String repostText;
+                    JSONObject userJson;
+                    JSONArray pics;
+                    JSONObject repostJson = blogJson.getJSONObject("retweeted_status");
+                    //如果是原创微博
+                    if (repostJson == null) {
+                        userJson = blogJson.getJSONObject("user");
+                        pics = blogJson.getJSONArray("pics");
+                        repostText = text;
+                    }
+                    else {
+                        repostId = repostJson.getLong("id");
+                        userJson = repostJson.getJSONObject("user");
+                        pics = repostJson.getJSONArray("pics");
+                        repostText = repostJson.getString("text");
+                    }
+                    if (pics == null || pics.size() == 0) {
+                        System.out.println("repostText=" + repostText);
+                        continue;
+                    }
+                    //保存微博用户
+                    if (userJson == null)
+                        continue;
+                    UserWeibo user = new UserWeibo();
+                    user.setId(userJson.getLong("id"));
+                    user.setName(userJson.getString("screen_name"));
+                    user.setAvatar(userJson.getString("profile_image_url"));
+                    DBUtil.saveUserWeibo(user);
+                    ArrayList<Image> images = new ArrayList<>();
+                    for (int picIndex = 0; picIndex < pics.size(); picIndex++) {
+                        JSONObject pic = pics.getJSONObject(picIndex);
+                        Image image = new Image();
+                        image.setPid(pic.getString("pid"));
+                        image.setWeiboId(repostId);
+                        image.setUrlSmall(pic.getString("url"));
+                        image.setUrlLarge(pic.getJSONObject("large").getString("url"));
+                        image.setUser(user);
+                        image.setText(repostText);
+                        images.add(image);
+                    }
                     //保存正文中的tag
                     DBUtil.saveImageAndTags(images, tags, true);
                     //解析每条微博评论
                     int commentPage = 1;
+                    long id = blogJson.getLong("id");
                     while (true) {
                         String commentUrl = String.format("https://m.weibo.cn/api/comments/show?id=%d&page=%d", id, commentPage++);
                         String commentResponse = HttpRequest.

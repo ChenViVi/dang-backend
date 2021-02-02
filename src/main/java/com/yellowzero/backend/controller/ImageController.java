@@ -7,6 +7,7 @@ import com.yellowzero.backend.service.ImageService;
 import com.yellowzero.backend.service.ImageTagService;
 import com.yellowzero.backend.service.MusicService;
 import com.yellowzero.backend.service.MusicTagService;
+import com.yellowzero.backend.util.ImageTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,5 +35,11 @@ public class ImageController {
         if (imageId == null)
             return new JsonResult(Status.SUCCESS, imageTagService.getList());
         return new JsonResult(Status.SUCCESS, imageTagService.getList(imageId));
+    }
+
+    @RequestMapping(value = "/refresh", method = {RequestMethod.GET, RequestMethod.POST})
+    public JsonResult refresh() {
+        new ImageTask().execute();
+        return new JsonResult(Status.SUCCESS);
     }
 }
