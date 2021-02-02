@@ -55,7 +55,6 @@ public class ImageTask implements Task {
                 }
                 if (hasMainTag) {
                     long repostId = blogJson.getLong("id");
-                    String repostText;
                     JSONObject userJson;
                     JSONArray pics;
                     JSONObject repostJson = blogJson.getJSONObject("retweeted_status");
@@ -63,13 +62,11 @@ public class ImageTask implements Task {
                     if (repostJson == null) {
                         userJson = blogJson.getJSONObject("user");
                         pics = blogJson.getJSONArray("pics");
-                        repostText = text;
                     }
                     else {
                         repostId = repostJson.getLong("id");
                         userJson = repostJson.getJSONObject("user");
                         pics = repostJson.getJSONArray("pics");
-                        repostText = repostJson.getString("text");
                     }
                     if (pics == null || pics.size() == 0) {
                         continue;
@@ -77,6 +74,18 @@ public class ImageTask implements Task {
                     //保存微博用户
                     if (userJson == null)
                         continue;
+                    String detailUrl = String.format("https://m.weibo.cn/statuses/show?id=%d", repostId);
+                    String detailResponse = HttpRequest.
+                            get(listUrl)
+                            .header("Referer", String.format("https://m.weibo.cn/u/%s", uid))
+                            .header("MWeibo-Pwa","1")
+                            .header("X-Requested-With", "XMLHttpRequest")
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
+                            .execute().body();
+                    JSONObject detailJson = JSON.parseObject(detailResponse);
+                    if (detailJson.getInteger("ok") != 1)
+                        return;
+                    String repostText = detailJson.getJSONObject("data").getString("text");
                     UserWeibo user = new UserWeibo();
                     user.setId(userJson.getLong("id"));
                     user.setName(userJson.getString("screen_name"));
