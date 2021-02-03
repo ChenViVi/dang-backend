@@ -22,8 +22,12 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image getOne(int imageId) {
-        Image i = imageRepository.findById(imageId);
-        return .orElse(null);
+        return imageRepository.findById(imageId).orElse(null);
+    }
+
+    @Override
+    public Image save(Image image) {
+        return imageRepository.saveAndFlush(image);
     }
 
     @Override

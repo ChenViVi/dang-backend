@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/image")
 public class ImageController {
@@ -46,7 +45,10 @@ public class ImageController {
 
     @RequestMapping(value = "/view", method = {RequestMethod.GET, RequestMethod.POST})
     public JsonResult refresh(@RequestParam(name = "image_id", required = false) int imageId) {
-        Image image  = imageService.
-        return new JsonResult(Status.SUCCESS);
+        Image image  = imageService.getOne(imageId);
+        if (image == null)
+            return new JsonResult(Status.NOT_FOUND);
+        image.setViewCount(image.getViewCount() + 1);
+        return new JsonResult(Status.SUCCESS.getCode(), imageService.save(image));
     }
 }
