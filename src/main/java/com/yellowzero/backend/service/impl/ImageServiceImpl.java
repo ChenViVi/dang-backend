@@ -21,6 +21,12 @@ public class ImageServiceImpl implements ImageService {
     private ImageTagRepository imageTagRepository;
 
     @Override
+    public Image getOne(int imageId) {
+        Image i = imageRepository.findById(imageId);
+        return .orElse(null);
+    }
+
+    @Override
     public List<Image> getList(int page, int size) {
         List<Image> images = imageRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending())).getContent();
         for (Image image : images)

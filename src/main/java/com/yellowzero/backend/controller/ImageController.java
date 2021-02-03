@@ -2,6 +2,7 @@ package com.yellowzero.backend.controller;
 
 import com.yellowzero.backend.model.JsonResult;
 import com.yellowzero.backend.model.Status;
+import com.yellowzero.backend.model.entity.Image;
 import com.yellowzero.backend.model.entity.MusicTag;
 import com.yellowzero.backend.service.ImageService;
 import com.yellowzero.backend.service.ImageTagService;
@@ -40,6 +41,12 @@ public class ImageController {
     @RequestMapping(value = "/refresh", method = {RequestMethod.GET, RequestMethod.POST})
     public JsonResult refresh() {
         new ImageTask().execute();
+        return new JsonResult(Status.SUCCESS);
+    }
+
+    @RequestMapping(value = "/view", method = {RequestMethod.GET, RequestMethod.POST})
+    public JsonResult refresh(@RequestParam(name = "image_id", required = false) int imageId) {
+        Image image  = imageService.
         return new JsonResult(Status.SUCCESS);
     }
 }
