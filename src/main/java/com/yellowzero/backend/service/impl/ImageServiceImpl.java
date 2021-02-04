@@ -1,7 +1,8 @@
 package com.yellowzero.backend.service.impl;
 
 import com.yellowzero.backend.model.entity.Image;
-import com.yellowzero.backend.model.entity.ImageTag;
+import com.yellowzero.backend.model.entity.ImageInfo;
+import com.yellowzero.backend.repository.ImageInfoRepository;
 import com.yellowzero.backend.repository.ImageRepository;
 import com.yellowzero.backend.repository.ImageTagRepository;
 import com.yellowzero.backend.service.ImageService;
@@ -10,8 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -19,6 +18,10 @@ public class ImageServiceImpl implements ImageService {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private ImageInfoRepository imageInfoRepository;
+
 
     @Autowired
     private ImageTagRepository imageTagRepository;
@@ -36,20 +39,22 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public List<Image> getList(int page, int size) {
         List<Image> images = imageRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending())).getContent();
-        for (Image image : images)
+        for (Image image : images) {
+            image.setImageInfoSmall(imageInfoRepository.findById(image.getImageInfoSmallId()).orElse(null));
+            image.setImageInfoLarge(imageInfoRepository.findById(image.getImageInfoLargeId()).orElse(null));
             image.setTags(imageTagRepository.findByImageId(image.getId()));
+        }
         return images;
     }
 
     @Override
     public List<Image> getList(int tagId, int page, int size) {
         List<Image> images = imageRepository.findByTag(tagId, PageRequest.of(page, size)).getContent();
-//        ImageTag imageTag = imageTagRepository.getOne(tagId);
-//        ArrayList<ImageTag> tags = new ArrayList<>();
-//        tags.add(imageTag);
-//        List<Image> images = imageRepository.findImageByTags(tags, PageRequest.of(page, size, Sort.by("id").descending())).getContent();
-        for (Image image : images)
+        for (Image image : images) {
+            image.setImageInfoSmall(imageInfoRepository.findById(image.getImageInfoSmallId()).orElse(null));
+            image.setImageInfoLarge(imageInfoRepository.findById(image.getImageInfoLargeId()).orElse(null));
             image.setTags(imageTagRepository.findByImageId(image.getId()));
+        }
         return images;
     }
 }
