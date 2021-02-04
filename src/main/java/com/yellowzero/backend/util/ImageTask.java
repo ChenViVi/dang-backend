@@ -47,12 +47,18 @@ public class ImageTask implements Task {
                 String text = blogJson.getString("text");
                 List<String> tags = ReUtil.findAll(regexTag, text, 0);
                 boolean hasMainTag = false;
+                int mainTagIndex = -1;
                 for (int tagIndex = 0; tagIndex < tags.size(); tagIndex++) {
                     String tag = tags.get(tagIndex).replaceAll("#", "");
                     tags.set(tagIndex, tag);
+                    if (tag.equals(mainTag))
+                        mainTagIndex = tagIndex;
                     if (!hasMainTag && tag.equals(mainTag))
                         hasMainTag = true;
                 }
+                //移除主标签
+                if (mainTagIndex != -1)
+                        tags.remove(mainTagIndex);
                 if (hasMainTag) {
                     long repostId = blogJson.getLong("id");
                     JSONObject userJson;
@@ -127,9 +133,16 @@ public class ImageTask implements Task {
                             String commentText = commentListJson.getJSONObject(commentIndex).getString("text");
                             List<String> commentTags = ReUtil.findAll(regexTag, commentText, 0);
                             //保存评论中的tag
+                            mainTagIndex = -1;
                             for (int commentTagIndex = 0; commentTagIndex < commentTags.size(); commentTagIndex++) {
-                                commentTags.set(commentTagIndex, commentTags.get(commentTagIndex).replaceAll("#", ""));
+                                String commentTag = commentTags.get(commentTagIndex).replaceAll("#", "");
+                                commentTags.set(commentTagIndex, commentTag);
+                                if (commentTag.equals(mainTag))
+                                    mainTagIndex = commentTagIndex;
                             }
+                            //移除主标签
+                            if (mainTagIndex != -1)
+                                commentTags.remove(mainTagIndex);
                             DBUtil.saveImageAndTags(images, commentTags, false);
                         }
                     }
