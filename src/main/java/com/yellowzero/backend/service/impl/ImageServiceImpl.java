@@ -1,7 +1,6 @@
 package com.yellowzero.backend.service.impl;
 
 import com.yellowzero.backend.model.entity.Image;
-import com.yellowzero.backend.model.entity.ImageInfo;
 import com.yellowzero.backend.repository.ImageInfoRepository;
 import com.yellowzero.backend.repository.ImageRepository;
 import com.yellowzero.backend.repository.ImageTagRepository;
