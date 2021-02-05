@@ -3,10 +3,7 @@ package com.yellowzero.backend.util;
 import cn.hutool.db.Db;
 import cn.hutool.db.Entity;
 
-import com.yellowzero.backend.model.entity.Image;
-import com.yellowzero.backend.model.entity.ImageTag;
-import com.yellowzero.backend.model.entity.ImageTagJoin;
-import com.yellowzero.backend.model.entity.UserWeibo;
+import com.yellowzero.backend.model.entity.*;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,6 +19,25 @@ public class DBUtil {
             }
             List<ImageTag> result = Db.use().find(Entity.create("image_tag")
                     .set("name", name), ImageTag.class);
+            return result.get(0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ImageInfo saveImageInfo(ImageInfo imageInfo) {
+        try {
+            List<ImageInfo> imageInfos = Db.use().find(Entity.create("image_info")
+                    .set("url", imageInfo.getUrl()), ImageInfo.class);
+            if (imageInfos == null || imageInfos.isEmpty()) {
+                Db.use().insert(Entity.create("image_info")
+                        .set("url", imageInfo.getUrl())
+                        .set("width", imageInfo.getWidth())
+                        .set("height", imageInfo.getHeight()));
+            }
+            List<ImageInfo> result = Db.use().find(Entity.create("image_info")
+                    .set("url", imageInfo.getUrl()), ImageInfo.class);
             return result.get(0);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -51,12 +67,12 @@ public class DBUtil {
                         .set("pid", image.getPid())
                         .set("weibo_id", image.getWeiboId())
                         .set("user_weibo_id", image.getUser().getId())
-                        .set("url_small", image.getUrlSmall())
-                        .set("url_large", image.getUrlLarge())
+                        .set("image_info_small_id", image.getImageInfoSmall().getId())
+                        .set("image_info_large_id", image.getImageInfoLarge().getId())
                         .set("text", image.getText()));
                 List<Image> result = Db.use().find(Entity.create("image")
                         .set("pid", image.getPid()), Image.class);
-                return findImage(image.getPid());
+                return findImage(result.get(0).getPid());
             } else {
                 Image dbImage = images.get(0);
                 if (!image.equals(dbImage))
@@ -64,8 +80,8 @@ public class DBUtil {
                                     .set("pid", image.getPid())
                                     .set("weibo_id", image.getWeiboId())
                                     .set("user_weibo_id", image.getUser().getId())
-                                    .set("url_small", image.getUrlSmall())
-                                    .set("url_large", image.getUrlLarge())
+                                    .set("image_info_large_id", image.getImageInfoSmall().getId())
+                                    .set("image_info_large_id", image.getImageInfoLarge().getId())
                                     .set("text", image.getText()),
                             Entity.create("image").set("id", dbImage.getId()));
                 image.setId(dbImage.getId());
@@ -115,10 +131,18 @@ public class DBUtil {
         }
     }
 
+    public static Image saveImageAndInfo(Image image) {
+        ImageInfo imageInfoSmall = saveImageInfo(image.getImageInfoSmall());
+        image.setImageInfoSmall(imageInfoSmall);
+        ImageInfo imageInfoLarge = saveImageInfo(image.getImageInfoLarge());
+        image.setImageInfoLarge(imageInfoLarge);
+        return saveImage(image);
+    }
+
     public static void saveImageAndTags(List<Image> images, List<String> names, boolean saveImage) {
         for (Image image : images) {
             if (saveImage)
-                image = saveImage(image);
+                image = saveImageAndInfo(image);
             else
                 image = findImage(image.getPid());
             for (String name : names) {

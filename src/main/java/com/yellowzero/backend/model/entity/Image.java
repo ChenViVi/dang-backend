@@ -1,5 +1,8 @@
 package com.yellowzero.backend.model.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -12,8 +15,14 @@ public class Image {
     private int id;
     private String pid;
     private long weiboId;
-    private String urlSmall;
-    private String urlLarge;
+    @JsonIgnore
+    private int imageInfoSmallId;
+    @JsonIgnore
+    private int imageInfoLargeId;
+    @Transient
+    private ImageInfo imageInfoSmall;
+    @Transient
+    private ImageInfo imageInfoLarge;
     @ManyToOne(targetEntity = UserWeibo.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_weibo_id", insertable = false, updatable = false)
     private UserWeibo user;
@@ -47,20 +56,36 @@ public class Image {
         this.weiboId = weiboId;
     }
 
-    public String getUrlSmall() {
-        return urlSmall;
+    public int getImageInfoSmallId() {
+        return imageInfoSmallId;
     }
 
-    public void setUrlSmall(String urlSmall) {
-        this.urlSmall = urlSmall;
+    public void setImageInfoSmallId(int imageInfoSmallId) {
+        this.imageInfoSmallId = imageInfoSmallId;
     }
 
-    public String getUrlLarge() {
-        return urlLarge;
+    public int getImageInfoLargeId() {
+        return imageInfoLargeId;
     }
 
-    public void setUrlLarge(String urlLarge) {
-        this.urlLarge = urlLarge;
+    public void setImageInfoLargeId(int imageInfoLargeId) {
+        this.imageInfoLargeId = imageInfoLargeId;
+    }
+
+    public ImageInfo getImageInfoSmall() {
+        return imageInfoSmall;
+    }
+
+    public void setImageInfoSmall(ImageInfo imageInfoSmall) {
+        this.imageInfoSmall = imageInfoSmall;
+    }
+
+    public ImageInfo getImageInfoLarge() {
+        return imageInfoLarge;
+    }
+
+    public void setImageInfoLarge(ImageInfo imageInfoLarge) {
+        this.imageInfoLarge = imageInfoLarge;
     }
 
     public UserWeibo getUser() {
@@ -110,8 +135,8 @@ public class Image {
         Image image = (Image) o;
         return Objects.equals(getPid(), image.getPid()) &&
                 Objects.equals(getWeiboId(), image.getWeiboId()) &&
-                Objects.equals(getUrlSmall(), image.getUrlSmall()) &&
-                Objects.equals(getUrlLarge(), image.getUrlLarge()) &&
+                Objects.equals(getImageInfoSmall(), image.getImageInfoSmall()) &&
+                Objects.equals(getImageInfoLarge(), image.getImageInfoLarge()) &&
                 Objects.equals(getText(), image.getText());
     }
 }

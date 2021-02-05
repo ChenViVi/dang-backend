@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.yellowzero.backend.model.entity.Image;
+import com.yellowzero.backend.model.entity.ImageInfo;
 import com.yellowzero.backend.model.entity.UserWeibo;
 
 import java.util.ArrayList;
@@ -47,12 +48,18 @@ public class ImageTask implements Task {
                 String text = blogJson.getString("text");
                 List<String> tags = ReUtil.findAll(regexTag, text, 0);
                 boolean hasMainTag = false;
+                int mainTagIndex = -1;
                 for (int tagIndex = 0; tagIndex < tags.size(); tagIndex++) {
                     String tag = tags.get(tagIndex).replaceAll("#", "");
                     tags.set(tagIndex, tag);
+                    if (tag.equals(mainTag))
+                        mainTagIndex = tagIndex;
                     if (!hasMainTag && tag.equals(mainTag))
                         hasMainTag = true;
                 }
+                //移除主标签
+                if (mainTagIndex != -1)
+                        tags.remove(mainTagIndex);
                 if (hasMainTag) {
                     long repostId = blogJson.getLong("id");
                     JSONObject userJson;
@@ -97,8 +104,19 @@ public class ImageTask implements Task {
                         Image image = new Image();
                         image.setPid(pic.getString("pid"));
                         image.setWeiboId(repostId);
-                        image.setUrlSmall(pic.getString("url"));
-                        image.setUrlLarge(pic.getJSONObject("large").getString("url"));
+                        ImageInfo imageInfoSmall = new ImageInfo();
+                        JSONObject smallGeoJson = pic.getJSONObject("geo");
+                        imageInfoSmall.setWidth(smallGeoJson.getInteger("width"));
+                        imageInfoSmall.setHeight(smallGeoJson.getInteger("height"));
+                        imageInfoSmall.setUrl(pic.getString("url"));
+                        image.setImageInfoSmall(imageInfoSmall);
+                        ImageInfo imageInfoLarge = new ImageInfo();
+                        JSONObject largePicJson = pic.getJSONObject("large");
+                        JSONObject largeGeoJson = largePicJson.getJSONObject("geo");
+                        imageInfoLarge.setWidth(largeGeoJson.getInteger("width"));
+                        imageInfoLarge.setHeight(largeGeoJson.getInteger("height"));
+                        imageInfoLarge.setUrl(largePicJson.getString("url"));
+                        image.setImageInfoLarge(imageInfoLarge);
                         image.setUser(user);
                         image.setText(repostText);
                         images.add(image);
@@ -127,9 +145,16 @@ public class ImageTask implements Task {
                             String commentText = commentListJson.getJSONObject(commentIndex).getString("text");
                             List<String> commentTags = ReUtil.findAll(regexTag, commentText, 0);
                             //保存评论中的tag
+                            mainTagIndex = -1;
                             for (int commentTagIndex = 0; commentTagIndex < commentTags.size(); commentTagIndex++) {
-                                commentTags.set(commentTagIndex, commentTags.get(commentTagIndex).replaceAll("#", ""));
+                                String commentTag = commentTags.get(commentTagIndex).replaceAll("#", "");
+                                commentTags.set(commentTagIndex, commentTag);
+                                if (commentTag.equals(mainTag))
+                                    mainTagIndex = commentTagIndex;
                             }
+                            //移除主标签
+                            if (mainTagIndex != -1)
+                                commentTags.remove(mainTagIndex);
                             DBUtil.saveImageAndTags(images, commentTags, false);
                         }
                     }
