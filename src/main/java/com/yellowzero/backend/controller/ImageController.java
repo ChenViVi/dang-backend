@@ -51,4 +51,16 @@ public class ImageController {
         image.setViewCount(image.getViewCount() + 1);
         return new JsonResult(Status.SUCCESS.getCode(), imageService.save(image));
     }
+
+    @RequestMapping(value = "/like", method = {RequestMethod.GET, RequestMethod.POST})
+    public JsonResult like(@RequestParam("image_id") int imageId, @RequestParam("like") int like) {
+        Image image  = imageService.getOne(imageId);
+        if (image == null)
+            return new JsonResult(Status.NOT_FOUND);
+        if (like == 0 && image.getLikeCount() != 0)
+            image.setLikeCount(image.getLikeCount() - 1);
+        else
+            image.setLikeCount(image.getLikeCount() + 1);
+        return new JsonResult(Status.SUCCESS.getCode(), imageService.save(image));
+    }
 }

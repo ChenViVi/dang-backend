@@ -21,6 +21,7 @@ public class Image {
     private List<ImageTag> tags;
     private String text;
     private int viewCount;
+    private int likeCount;
 
     public int getId() {
         return id;
@@ -92,6 +93,14 @@ public class Image {
 
     public void setViewCount(int viewCount) {
         this.viewCount = viewCount;
+    }
+
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
     }
 
     @Override
