@@ -102,12 +102,10 @@ public class ImageTask implements Task {
                         return;
                     String repostText = detailJson.getJSONObject("data").getString("text");
                     Timestamp timestamp = null;
-                    System.out.println(time);
                     try {
                         timestamp = new Timestamp(dateFormat.parse(time).getTime());
                     } catch (ParseException e) {
                         e.printStackTrace();
-                        System.out.println(e.getMessage());
                     }
                     UserWeibo user = new UserWeibo();
                     user.setId(userJson.getLong("id"));
