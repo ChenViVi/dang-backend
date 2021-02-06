@@ -69,7 +69,8 @@ public class DBUtil {
                         .set("user_weibo_id", image.getUser().getId())
                         .set("image_info_small_id", image.getImageInfoSmall().getId())
                         .set("image_info_large_id", image.getImageInfoLarge().getId())
-                        .set("text", image.getText()));
+                        .set("text", image.getText())
+                        .set("time", image.getTime()));
                 List<Image> result = Db.use().find(Entity.create("image")
                         .set("pid", image.getPid()), Image.class);
                 return findImage(result.get(0).getPid());
@@ -82,7 +83,8 @@ public class DBUtil {
                                     .set("user_weibo_id", image.getUser().getId())
                                     .set("image_info_large_id", image.getImageInfoSmall().getId())
                                     .set("image_info_large_id", image.getImageInfoLarge().getId())
-                                    .set("text", image.getText()),
+                                    .set("text", image.getText())
+                                    .set("time", image.getTime()),
                             Entity.create("image").set("id", dbImage.getId()));
                 image.setId(dbImage.getId());
                 return image;

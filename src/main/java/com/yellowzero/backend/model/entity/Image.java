@@ -4,6 +4,7 @@ package com.yellowzero.backend.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,6 +30,7 @@ public class Image {
     @Transient
     private List<ImageTag> tags;
     private String text;
+    private Timestamp time;
     private int viewCount;
     private int likeCount;
 
@@ -112,6 +114,14 @@ public class Image {
         this.text = text;
     }
 
+    public Timestamp getTime() {
+        return time;
+    }
+
+    public void setTime(Timestamp time) {
+        this.time = time;
+    }
+
     public int getViewCount() {
         return viewCount;
     }
@@ -137,6 +147,7 @@ public class Image {
                 Objects.equals(getWeiboId(), image.getWeiboId()) &&
                 Objects.equals(getImageInfoSmall(), image.getImageInfoSmall()) &&
                 Objects.equals(getImageInfoLarge(), image.getImageInfoLarge()) &&
-                Objects.equals(getText(), image.getText());
+                Objects.equals(getText(), image.getText()) &&
+                Objects.equals(getTime(), image.getTime());
     }
 }

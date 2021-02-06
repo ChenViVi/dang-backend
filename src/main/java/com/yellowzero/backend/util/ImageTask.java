@@ -10,10 +10,16 @@ import com.yellowzero.backend.model.entity.Image;
 import com.yellowzero.backend.model.entity.ImageInfo;
 import com.yellowzero.backend.model.entity.UserWeibo;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class ImageTask implements Task {
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
 
     public void execute() {
 
@@ -62,6 +68,7 @@ public class ImageTask implements Task {
                         tags.remove(mainTagIndex);
                 if (hasMainTag) {
                     long repostId = blogJson.getLong("id");
+                    String time = blogJson.getString("created_at");
                     JSONObject userJson;
                     JSONArray pics;
                     JSONObject repostJson = blogJson.getJSONObject("retweeted_status");
@@ -72,6 +79,7 @@ public class ImageTask implements Task {
                     }
                     else {
                         repostId = repostJson.getLong("id");
+                        time = repostJson.getString("created_at");
                         userJson = repostJson.getJSONObject("user");
                         pics = repostJson.getJSONArray("pics");
                     }
@@ -93,6 +101,14 @@ public class ImageTask implements Task {
                     if (detailJson.getInteger("ok") != 1)
                         return;
                     String repostText = detailJson.getJSONObject("data").getString("text");
+                    Timestamp timestamp = null;
+                    System.out.println(time);
+                    try {
+                        timestamp = new Timestamp(dateFormat.parse(time).getTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        System.out.println(e.getMessage());
+                    }
                     UserWeibo user = new UserWeibo();
                     user.setId(userJson.getLong("id"));
                     user.setName(userJson.getString("screen_name"));
@@ -119,6 +135,7 @@ public class ImageTask implements Task {
                         image.setImageInfoLarge(imageInfoLarge);
                         image.setUser(user);
                         image.setText(repostText);
+                        image.setTime(timestamp);
                         images.add(image);
                     }
                     //保存正文中的tag
