@@ -30,6 +30,8 @@ public class ImageServiceImpl implements ImageService {
         Image image = imageRepository.findById(imageId).orElse(null);
         if (image == null)
             return null;
+        image.setImageInfoSmall(imageInfoRepository.findById(image.getImageInfoSmallId()).orElse(null));
+        image.setImageInfoLarge(imageInfoRepository.findById(image.getImageInfoLargeId()).orElse(null));
         image.setTags(imageTagRepository.findByImageId(image.getId()));
         return image;
     }
