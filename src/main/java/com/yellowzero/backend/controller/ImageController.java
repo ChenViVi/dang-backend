@@ -25,6 +25,14 @@ public class ImageController {
     @Autowired
     ImageTagService imageTagService;
 
+    @RequestMapping(value = "", method = {RequestMethod.GET, RequestMethod.POST})
+    public JsonResult list(@RequestParam("id") int id) {
+        Image image  = imageService.getOne(id);
+        if (image == null)
+            return new JsonResult(Status.NOT_FOUND);
+        return new JsonResult(Status.SUCCESS, image);
+    }
+
     @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
     public JsonResult list(@RequestParam(name = "tag_id", required = false) Integer tagId,
                            @RequestParam(name = "page", defaultValue = "0") int page,
