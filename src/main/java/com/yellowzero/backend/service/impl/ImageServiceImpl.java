@@ -27,7 +27,11 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image getOne(int imageId) {
-        return imageRepository.findById(imageId).orElse(null);
+        Image image = imageRepository.findById(imageId).orElse(null);
+        if (image == null)
+            return null;
+        image.setTags(imageTagRepository.findByImageId(image.getId()));
+        return image;
     }
 
     @Override
