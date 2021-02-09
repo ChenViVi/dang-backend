@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface ImageTagRepository extends JpaRepository<ImageTag, Integer> {
-    @Query(value = "SELECT * FROM image_tag JOIN image_tag_join ON image_tag.id = image_tag_join.tag_id WHERE image_tag_join.image_id = :imageId", nativeQuery = true)
+    @Query(value = "SELECT * FROM image_tag " +
+            "JOIN image_tag_join ON image_tag.id = image_tag_join.tag_id " +
+            "WHERE image_tag.disable = 0 " +
+            "AND image_tag_join.image_id = :imageId", nativeQuery = true)
     List<ImageTag> findByImageId(int imageId);
 }

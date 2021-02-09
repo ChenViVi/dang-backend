@@ -9,6 +9,7 @@ public class ImageTag {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     private String name;
+    private int disable;
 
     public int getId() {
         return id;
@@ -24,6 +25,14 @@ public class ImageTag {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getDisable() {
+        return disable;
+    }
+
+    public void setDisable(int disable) {
+        this.disable = disable;
     }
 }
 
