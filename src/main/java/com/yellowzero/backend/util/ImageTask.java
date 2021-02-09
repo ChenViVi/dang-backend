@@ -27,6 +27,7 @@ public class ImageTask implements Task {
         long containerId = 1076037532254335L;
 
         String regexTag = "#[^#]+#";
+        String regexPic = "“[0-9]”";
         String mainTag = "黄龄图集";
 
         int listPage = 1;
@@ -111,31 +112,62 @@ public class ImageTask implements Task {
                     user.setId(userJson.getLong("id"));
                     user.setName(userJson.getString("screen_name"));
                     user.setAvatar(userJson.getString("profile_image_url"));
-                    DBUtil.saveUserWeibo(user);
                     ArrayList<Image> images = new ArrayList<>();
-                    for (int picIndex = 0; picIndex < pics.size(); picIndex++) {
-                        JSONObject pic = pics.getJSONObject(picIndex);
-                        Image image = new Image();
-                        image.setPid(pic.getString("pid"));
-                        image.setWeiboId(repostId);
-                        ImageInfo imageInfoSmall = new ImageInfo();
-                        JSONObject smallGeoJson = pic.getJSONObject("geo");
-                        imageInfoSmall.setWidth(smallGeoJson.getInteger("width"));
-                        imageInfoSmall.setHeight(smallGeoJson.getInteger("height"));
-                        imageInfoSmall.setUrl(pic.getString("url"));
-                        image.setImageInfoSmall(imageInfoSmall);
-                        ImageInfo imageInfoLarge = new ImageInfo();
-                        JSONObject largePicJson = pic.getJSONObject("large");
-                        JSONObject largeGeoJson = largePicJson.getJSONObject("geo");
-                        imageInfoLarge.setWidth(largeGeoJson.getInteger("width"));
-                        imageInfoLarge.setHeight(largeGeoJson.getInteger("height"));
-                        imageInfoLarge.setUrl(largePicJson.getString("url"));
-                        image.setImageInfoLarge(imageInfoLarge);
-                        image.setUser(user);
-                        image.setText(repostText);
-                        image.setTime(timestamp);
-                        images.add(image);
-                    }
+                    List<String> picIndexs = ReUtil.findAll(regexPic, text, 0);
+                    if (picIndexs.size() > 0) {
+                        for (String picIndexStr : picIndexs) {
+                            int picIndex = Integer.parseInt(picIndexStr.replace("“", "").replace("”", "")) - 1;
+                            if (picIndex >= 0 && picIndex < pics.size()) {
+                                JSONObject pic = pics.getJSONObject(picIndex);
+                                Image image = new Image();
+                                image.setPid(pic.getString("pid"));
+                                image.setWeiboId(repostId);
+                                ImageInfo imageInfoSmall = new ImageInfo();
+                                JSONObject smallGeoJson = pic.getJSONObject("geo");
+                                imageInfoSmall.setWidth(smallGeoJson.getInteger("width"));
+                                imageInfoSmall.setHeight(smallGeoJson.getInteger("height"));
+                                imageInfoSmall.setUrl(pic.getString("url"));
+                                image.setImageInfoSmall(imageInfoSmall);
+                                ImageInfo imageInfoLarge = new ImageInfo();
+                                JSONObject largePicJson = pic.getJSONObject("large");
+                                JSONObject largeGeoJson = largePicJson.getJSONObject("geo");
+                                imageInfoLarge.setWidth(largeGeoJson.getInteger("width"));
+                                imageInfoLarge.setHeight(largeGeoJson.getInteger("height"));
+                                imageInfoLarge.setUrl(largePicJson.getString("url"));
+                                image.setImageInfoLarge(imageInfoLarge);
+                                image.setUser(user);
+                                image.setText(repostText);
+                                image.setTime(timestamp);
+                                images.add(image);
+                            }
+                        }
+                    } else
+                        for (int picIndex = 0; picIndex < pics.size(); picIndex++) {
+                            JSONObject pic = pics.getJSONObject(picIndex);
+                            Image image = new Image();
+                            image.setPid(pic.getString("pid"));
+                            image.setWeiboId(repostId);
+                            ImageInfo imageInfoSmall = new ImageInfo();
+                            JSONObject smallGeoJson = pic.getJSONObject("geo");
+                            imageInfoSmall.setWidth(smallGeoJson.getInteger("width"));
+                            imageInfoSmall.setHeight(smallGeoJson.getInteger("height"));
+                            imageInfoSmall.setUrl(pic.getString("url"));
+                            image.setImageInfoSmall(imageInfoSmall);
+                            ImageInfo imageInfoLarge = new ImageInfo();
+                            JSONObject largePicJson = pic.getJSONObject("large");
+                            JSONObject largeGeoJson = largePicJson.getJSONObject("geo");
+                            imageInfoLarge.setWidth(largeGeoJson.getInteger("width"));
+                            imageInfoLarge.setHeight(largeGeoJson.getInteger("height"));
+                            imageInfoLarge.setUrl(largePicJson.getString("url"));
+                            image.setImageInfoLarge(imageInfoLarge);
+                            image.setUser(user);
+                            image.setText(repostText);
+                            image.setTime(timestamp);
+                            images.add(image);
+                        }
+                    if (images.size() == 0)
+                        continue;
+                    DBUtil.saveUserWeibo(user);
                     //保存正文中的tag
                     DBUtil.saveImageAndTags(images, tags, true);
                     //解析每条微博评论
