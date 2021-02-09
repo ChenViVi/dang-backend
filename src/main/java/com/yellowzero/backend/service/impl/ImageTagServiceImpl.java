@@ -20,7 +20,7 @@ public class ImageTagServiceImpl implements ImageTagService {
 
     @Override
     public List<ImageTag> getList() {
-        List<ImageTag> tagList = imageTagRepository.findAll();
+        List<ImageTag> tagList = imageTagRepository.findByDisable(0);
         for (ImageTag tag : tagList)
             tag.setCount(imageRepository.countByTagId(tag.getId()));
         return tagList;

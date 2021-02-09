@@ -12,4 +12,6 @@ public interface ImageTagRepository extends JpaRepository<ImageTag, Integer> {
             "WHERE image_tag.disable = 0 " +
             "AND image_tag_join.image_id = :imageId", nativeQuery = true)
     List<ImageTag> findByImageId(int imageId);
+    
+    List<ImageTag> findByDisable(int disable);
 }
