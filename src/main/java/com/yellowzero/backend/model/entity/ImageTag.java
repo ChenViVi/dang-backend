@@ -1,5 +1,7 @@
 package com.yellowzero.backend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -9,7 +11,10 @@ public class ImageTag {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
     private String name;
+    @JsonIgnore
     private int disable;
+    @Transient
+    private long count;
 
     public int getId() {
         return id;
@@ -33,6 +38,14 @@ public class ImageTag {
 
     public void setDisable(int disable) {
         this.disable = disable;
+    }
+
+    public long getCount() {
+        return count;
+    }
+
+    public void setCount(long count) {
+        this.count = count;
     }
 }
 

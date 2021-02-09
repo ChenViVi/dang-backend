@@ -1,6 +1,7 @@
 package com.yellowzero.backend.service.impl;
 
 import com.yellowzero.backend.model.entity.ImageTag;
+import com.yellowzero.backend.repository.ImageRepository;
 import com.yellowzero.backend.repository.ImageTagRepository;
 import com.yellowzero.backend.service.ImageTagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +13,24 @@ import java.util.List;
 public class ImageTagServiceImpl implements ImageTagService {
 
     @Autowired
+    private ImageRepository imageRepository;
+
+    @Autowired
     private ImageTagRepository imageTagRepository;
 
     @Override
     public List<ImageTag> getList() {
-        return imageTagRepository.findAll();
+        List<ImageTag> tagList = imageTagRepository.findAll();
+        for (ImageTag tag : tagList)
+            tag.setCount(imageRepository.countByTagId(tag.getId()));
+        return tagList;
     }
 
     @Override
     public List<ImageTag> getList(int imageId) {
-        return imageTagRepository.findByImageId(imageId);
+        List<ImageTag> tagList = imageTagRepository.findByImageId(imageId);
+        for (ImageTag tag : tagList)
+            tag.setCount(imageRepository.countByTagId(tag.getId()));
+        return tagList;
     }
 }

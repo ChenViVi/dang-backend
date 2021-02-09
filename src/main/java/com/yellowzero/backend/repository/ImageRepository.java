@@ -19,4 +19,9 @@ public interface ImageRepository extends JpaRepository<Image, Integer> {
             "WHERE image_tag_join.tag_id = :tagId " +
             "ORDER BY image.time DESC", nativeQuery = true)
     Page<Image> findByTag(int tagId, Pageable pageable);
+
+    @Query(value = "SELECT COUNT(image.id) FROM image " +
+            "JOIN image_tag_join ON image.id = image_tag_join.image_id " +
+            "WHERE image_tag_join.tag_id = :tagId", nativeQuery = true)
+    long countByTagId(int tagId);
 }
