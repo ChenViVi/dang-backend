@@ -4,6 +4,7 @@ import com.yellowzero.backend.model.entity.App;
 import com.yellowzero.backend.repository.AppRepository;
 import com.yellowzero.backend.service.AppService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,6 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public List<App> getList() {
-        return appRepository.findAll();
+        return appRepository.findAll(Sort.by("id").descending());
     }
 }
