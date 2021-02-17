@@ -43,7 +43,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public List<Image> getList(int page, int size) {
-        List<Image> images = imageRepository.findAll(PageRequest.of(page, size, Sort.by("time").descending())).getContent();
+        List<Image> images = imageRepository.findByDisable(0, PageRequest.of(page, size, Sort.by("time").descending())).getContent();
         for (Image image : images) {
             image.setImageInfoSmall(imageInfoRepository.findById(image.getImageInfoSmallId()).orElse(null));
             image.setImageInfoLarge(imageInfoRepository.findById(image.getImageInfoLargeId()).orElse(null));

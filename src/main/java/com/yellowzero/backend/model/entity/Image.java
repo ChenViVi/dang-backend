@@ -17,6 +17,8 @@ public class Image {
     private String pid;
     private long weiboId;
     @JsonIgnore
+    private int disable;
+    @JsonIgnore
     private int imageInfoSmallId;
     @JsonIgnore
     private int imageInfoLargeId;
@@ -56,6 +58,14 @@ public class Image {
 
     public void setWeiboId(long weiboId) {
         this.weiboId = weiboId;
+    }
+
+    public int getDisable() {
+        return disable;
+    }
+
+    public void setDisable(int disable) {
+        this.disable = disable;
     }
 
     public int getImageInfoSmallId() {
