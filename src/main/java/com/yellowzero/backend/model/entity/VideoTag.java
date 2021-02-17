@@ -7,15 +7,24 @@ import javax.persistence.*;
 public class VideoTag {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private long id;
+    private int id;
+    private long bizId;
     private String name;
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public long getBizId() {
+        return bizId;
+    }
+
+    public void setBizId(long bizId) {
+        this.bizId = bizId;
     }
 
     public String getName() {
