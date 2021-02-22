@@ -11,6 +11,7 @@ public class App {
     private int code;
     private String name;
     private String url;
+    private String info;
 
     public int getId() {
         return id;
@@ -42,5 +43,13 @@ public class App {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 }
