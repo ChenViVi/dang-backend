@@ -10,6 +10,7 @@ public class App {
     private int id;
     private int code;
     private String name;
+    private boolean forceUpdate;
     private String url;
     private String info;
 
@@ -35,6 +36,14 @@ public class App {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isForceUpdate() {
+        return forceUpdate;
+    }
+
+    public void setForceUpdate(boolean forceUpdate) {
+        this.forceUpdate = forceUpdate;
     }
 
     public String getUrl() {
