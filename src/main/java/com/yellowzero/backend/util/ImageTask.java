@@ -103,7 +103,7 @@ public class ImageTask implements Task {
                         return;
                     JSONObject detailJson = JSON.parseObject(detailResponse);
                     if (detailJson.getInteger("ok") != 1) {
-                        System.out.println(detailUrl + "request not ok");
+                        System.out.println(detailUrl + " request not ok");
                         continue;
                     }
                     String repostText = detailJson.getJSONObject("data").getString("text");
