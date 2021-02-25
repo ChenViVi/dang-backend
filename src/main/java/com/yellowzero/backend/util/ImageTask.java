@@ -3,6 +3,7 @@ package com.yellowzero.backend.util;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -35,13 +36,14 @@ public class ImageTask implements Task {
             String listUrl = String.format("https://m.weibo.cn/api/container/getIndex?type=uid&value=%d&containerid=%d&page=%d",
                     uid,
                     containerId, listPage++);
-            String listResponse = HttpRequest.
+            String listResponse = startRequest(HttpRequest.
                     get(listUrl)
                     .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                     .header("MWeibo-Pwa","1")
                     .header("X-Requested-With", "XMLHttpRequest")
-                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
-                    .execute().body();
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"));
+            if (listResponse == null)
+                return;
             JSONObject listJson = JSON.parseObject(listResponse);
             if (listJson.getInteger("ok") != 1)
                 return;
@@ -91,16 +93,19 @@ public class ImageTask implements Task {
                     if (userJson == null)
                         continue;
                     String detailUrl = String.format("https://m.weibo.cn/statuses/show?id=%d", repostId);
-                    String detailResponse = HttpRequest.
+                    String detailResponse = startRequest(HttpRequest.
                             get(detailUrl)
                             .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                             .header("MWeibo-Pwa","1")
                             .header("X-Requested-With", "XMLHttpRequest")
-                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
-                            .execute().body();
-                    JSONObject detailJson = JSON.parseObject(detailResponse);
-                    if (detailJson.getInteger("ok") != 1)
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"));
+                    if (detailResponse == null)
                         return;
+                    JSONObject detailJson = JSON.parseObject(detailResponse);
+                    if (detailJson.getInteger("ok") != 1) {
+                        System.out.println(detailUrl + "request not ok");
+                        continue;
+                    }
                     String repostText = detailJson.getJSONObject("data").getString("text");
                     Timestamp timestamp = null;
                     try {
@@ -175,13 +180,14 @@ public class ImageTask implements Task {
                     long id = blogJson.getLong("id");
                     while (true) {
                         String commentUrl = String.format("https://m.weibo.cn/api/comments/show?id=%d&page=%d", id, commentPage++);
-                        String commentResponse = HttpRequest.
+                        String commentResponse = startRequest(HttpRequest.
                                 get(commentUrl)
                                 .header("Referer", "https://m.weibo.cn/")
                                 .header("MWeibo-Pwa","1")
                                 .header("X-Requested-With", "XMLHttpRequest")
-                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36")
-                                .execute().body();
+                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"));
+                        if (commentResponse == null)
+                            return;
                         JSONObject commentJson = JSON.parseObject(commentResponse);
                         if (commentJson.getInteger("ok") != 1)
                             break;
@@ -207,6 +213,17 @@ public class ImageTask implements Task {
                     }
                 }
             }
+        }
+    }
+
+    private static String startRequest(HttpRequest httpRequest){
+        try {
+            Thread.sleep(3000);
+            System.out.println(httpRequest.getUrl());
+            return httpRequest.execute().body();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
