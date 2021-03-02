@@ -65,11 +65,11 @@ public class ImageController {
     }
 
     @RequestMapping(value = "/like", method = {RequestMethod.GET, RequestMethod.POST})
-    public JsonResult like(@RequestParam("image_id") int imageId, @RequestParam("like") int like) {
+    public JsonResult like(@RequestParam("image_id") int imageId, @RequestParam("like") boolean like) {
         Image image  = imageService.getOne(imageId);
         if (image == null)
             return new JsonResult(Status.NOT_FOUND);
-        if (like == 0 && image.getLikeCount() != 0)
+        if (!like && image.getLikeCount() != 0)
             image.setLikeCount(image.getLikeCount() - 1);
         else
             image.setLikeCount(image.getLikeCount() + 1);
