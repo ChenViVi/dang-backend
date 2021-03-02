@@ -5,10 +5,7 @@ import com.yellowzero.backend.repository.ImageInfoRepository;
 import com.yellowzero.backend.repository.ImageRepository;
 import com.yellowzero.backend.repository.ImageTagRepository;
 import com.yellowzero.backend.service.ImageService;
-import com.yellowzero.backend.util.OffsetBasedPageRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,8 +40,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> getList(int offset, int size) {
-        List<Image> images = imageRepository.findByDisable(0, new OffsetBasedPageRequest(offset, size, Sort.by("time").descending())).getContent();
+    public List<Image> getList(int startId, int size) {
+        List<Image> images = imageRepository.findAll(startId, size);
         for (Image image : images) {
             image.setImageInfoSmall(imageInfoRepository.findById(image.getImageInfoSmallId()).orElse(null));
             image.setImageInfoLarge(imageInfoRepository.findById(image.getImageInfoLargeId()).orElse(null));
@@ -54,8 +51,8 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public List<Image> getList(int tagId, int offset, int size) {
-        List<Image> images = imageRepository.findByTag(tagId, new OffsetBasedPageRequest(offset, size)).getContent();
+    public List<Image> getList(int tagId, int startId, int size) {
+        List<Image> images = imageRepository.findByTag(tagId, startId, size);
         for (Image image : images) {
             image.setImageInfoSmall(imageInfoRepository.findById(image.getImageInfoSmallId()).orElse(null));
             image.setImageInfoLarge(imageInfoRepository.findById(image.getImageInfoLargeId()).orElse(null));

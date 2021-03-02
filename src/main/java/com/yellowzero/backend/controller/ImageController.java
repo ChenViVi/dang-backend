@@ -35,11 +35,11 @@ public class ImageController {
 
     @RequestMapping(value = "/list", method = {RequestMethod.GET, RequestMethod.POST})
     public JsonResult list(@RequestParam(name = "tag_id", required = false) Integer tagId,
-                           @RequestParam(name = "offset", defaultValue = "0") int offset,
+                           @RequestParam(name = "start_id", defaultValue = "0") int startId,
                            @RequestParam(name="size",defaultValue = "20") int size) {
         if (tagId == null)
-            return new JsonResult(Status.SUCCESS, imageService.getList(offset, size));
-        return new JsonResult(Status.SUCCESS, imageService.getList(tagId, offset, size));
+            return new JsonResult(Status.SUCCESS, imageService.getList(startId, size));
+        return new JsonResult(Status.SUCCESS, imageService.getList(tagId, startId, size));
     }
 
     @RequestMapping(value = "/tags", method = {RequestMethod.GET, RequestMethod.POST})
