@@ -3,7 +3,6 @@ package com.yellowzero.backend.util;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.cron.task.Task;
 import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -70,29 +69,32 @@ public class ImageTask implements Task {
                 if (mainTagIndex != -1)
                         tags.remove(mainTagIndex);
                 if (hasMainTag) {
-                    long repostId = blogJson.getLong("id");
+                    long weiboId,repostId;
+                    weiboId = repostId = blogJson.getLong("id");
                     String time = blogJson.getString("created_at");
                     JSONObject userJson;
                     JSONArray pics;
                     JSONObject repostJson = blogJson.getJSONObject("retweeted_status");
+                    String repostText;
                     //如果是原创微博
                     if (repostJson == null) {
                         userJson = blogJson.getJSONObject("user");
                         pics = blogJson.getJSONArray("pics");
+                        repostText = blogJson.getString("text");
                     }
                     else {
-                        repostId = repostJson.getLong("id");
+                        weiboId = repostJson.getLong("id");
                         time = repostJson.getString("created_at");
                         userJson = repostJson.getJSONObject("user");
                         pics = repostJson.getJSONArray("pics");
+                        repostText = repostJson.getString("text");
                     }
-                    if (pics == null || pics.size() == 0) {
+                    if (pics == null || pics.size() == 0)
                         continue;
-                    }
                     //保存微博用户
                     if (userJson == null)
                         continue;
-                    String detailUrl = String.format("https://m.weibo.cn/statuses/show?id=%d", repostId);
+                    String detailUrl = String.format("https://m.weibo.cn/statuses/show?id=%d", weiboId);
                     String detailResponse = startRequest(HttpRequest.
                             get(detailUrl)
                             .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
@@ -102,11 +104,8 @@ public class ImageTask implements Task {
                     if (detailResponse == null)
                         return;
                     JSONObject detailJson = JSON.parseObject(detailResponse);
-                    if (detailJson.getInteger("ok") != 1) {
-                        System.out.println(detailUrl + " request not ok");
-                        continue;
-                    }
-                    String repostText = detailJson.getJSONObject("data").getString("text");
+                    if (detailJson.getInteger("ok") == 1)
+                        repostText = detailJson.getJSONObject("data").getString("text");
                     Timestamp timestamp = null;
                     try {
                         timestamp = new Timestamp(dateFormat.parse(time).getTime());
@@ -119,52 +118,30 @@ public class ImageTask implements Task {
                     user.setAvatar(userJson.getString("profile_image_url"));
                     ArrayList<Image> images = new ArrayList<>();
                     List<String> picIndexs = ReUtil.findAll(regexPic, text, 0);
-                    if (picIndexs.size() > 0) {
+                    if (picIndexs.size() > 0)
                         for (String picIndexStr : picIndexs) {
                             int picIndex = Integer.parseInt(picIndexStr.replace("“", "").replace("”", "")) - 1;
                             if (picIndex >= 0 && picIndex < pics.size()) {
-                                JSONObject pic = pics.getJSONObject(picIndex);
                                 Image image = new Image();
+                                JSONObject pic = pics.getJSONObject(picIndex);
+                                setImageInfo(image, pic);
                                 image.setPid(pic.getString("pid"));
-                                image.setWeiboId(repostId);
-                                ImageInfo imageInfoSmall = new ImageInfo();
-                                JSONObject smallGeoJson = pic.getJSONObject("geo");
-                                imageInfoSmall.setWidth(smallGeoJson.getInteger("width"));
-                                imageInfoSmall.setHeight(smallGeoJson.getInteger("height"));
-                                imageInfoSmall.setUrl(pic.getString("url"));
-                                image.setImageInfoSmall(imageInfoSmall);
-                                ImageInfo imageInfoLarge = new ImageInfo();
-                                JSONObject largePicJson = pic.getJSONObject("large");
-                                JSONObject largeGeoJson = largePicJson.getJSONObject("geo");
-                                imageInfoLarge.setWidth(largeGeoJson.getInteger("width"));
-                                imageInfoLarge.setHeight(largeGeoJson.getInteger("height"));
-                                imageInfoLarge.setUrl(largePicJson.getString("url"));
-                                image.setImageInfoLarge(imageInfoLarge);
+                                image.setWeiboId(weiboId);
+                                image.setRepostId(repostId);
                                 image.setUser(user);
                                 image.setText(repostText);
                                 image.setTime(timestamp);
                                 images.add(image);
                             }
                         }
-                    } else
+                    else
                         for (int picIndex = 0; picIndex < pics.size(); picIndex++) {
-                            JSONObject pic = pics.getJSONObject(picIndex);
                             Image image = new Image();
+                            JSONObject pic = pics.getJSONObject(picIndex);
+                            setImageInfo(image, pic);
                             image.setPid(pic.getString("pid"));
-                            image.setWeiboId(repostId);
-                            ImageInfo imageInfoSmall = new ImageInfo();
-                            JSONObject smallGeoJson = pic.getJSONObject("geo");
-                            imageInfoSmall.setWidth(smallGeoJson.getInteger("width"));
-                            imageInfoSmall.setHeight(smallGeoJson.getInteger("height"));
-                            imageInfoSmall.setUrl(pic.getString("url"));
-                            image.setImageInfoSmall(imageInfoSmall);
-                            ImageInfo imageInfoLarge = new ImageInfo();
-                            JSONObject largePicJson = pic.getJSONObject("large");
-                            JSONObject largeGeoJson = largePicJson.getJSONObject("geo");
-                            imageInfoLarge.setWidth(largeGeoJson.getInteger("width"));
-                            imageInfoLarge.setHeight(largeGeoJson.getInteger("height"));
-                            imageInfoLarge.setUrl(largePicJson.getString("url"));
-                            image.setImageInfoLarge(imageInfoLarge);
+                            image.setWeiboId(weiboId);
+                            image.setRepostId(repostId);
                             image.setUser(user);
                             image.setText(repostText);
                             image.setTime(timestamp);
@@ -216,10 +193,32 @@ public class ImageTask implements Task {
         }
     }
 
-    private static String startRequest(HttpRequest httpRequest){
+    private void setImageInfo(Image image, JSONObject pic) {
+        ImageInfo imageInfoLarge = new ImageInfo();
+        JSONObject largePicJson = pic.getJSONObject("large");
+        imageInfoLarge.setUrl(largePicJson.getString("url"));
+        Object largoGeo = largePicJson.get("geo");
+        if (largoGeo instanceof JSONObject) {
+            JSONObject largeGeoJson = (JSONObject)largoGeo;
+            imageInfoLarge.setWidth(largeGeoJson.getInteger("width"));
+            imageInfoLarge.setHeight(largeGeoJson.getInteger("height"));
+        }
+        image.setImageInfoLarge(imageInfoLarge);
+        ImageInfo imageInfoSmall = new ImageInfo();
+        imageInfoSmall.setUrl(pic.getString("url"));
+        Object geo = pic.get("geo");
+        if (geo instanceof JSONObject) {
+            JSONObject smallGeoJson = (JSONObject)geo;
+            imageInfoSmall.setWidth(smallGeoJson.getInteger("width"));
+            imageInfoSmall.setHeight(smallGeoJson.getInteger("height"));
+        }
+        image.setImageInfoSmall(imageInfoSmall);
+    }
+
+    private String startRequest(HttpRequest httpRequest){
         try {
-            Thread.sleep(3000);
-            System.out.println(httpRequest.getUrl());
+            Thread.sleep(1000);
+            //System.out.println(httpRequest.getUrl());
             return httpRequest.execute().body();
         } catch (InterruptedException e) {
             e.printStackTrace();

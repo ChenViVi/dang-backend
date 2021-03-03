@@ -25,4 +25,4 @@
 /build/
 
 /src/main/resources/application.properties
-/src/main/resources/db.setting
+/src/main/resources/config/db.setting

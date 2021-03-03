@@ -16,6 +16,7 @@ public class Image {
     private int id;
     private String pid;
     private long weiboId;
+    private long repostId;
     @JsonIgnore
     private int disable;
     @JsonIgnore
@@ -58,6 +59,14 @@ public class Image {
 
     public void setWeiboId(long weiboId) {
         this.weiboId = weiboId;
+    }
+
+    public long getRepostId() {
+        return repostId;
+    }
+
+    public void setRepostId(long repostId) {
+        this.repostId = repostId;
     }
 
     public int getDisable() {
@@ -155,6 +164,7 @@ public class Image {
         Image image = (Image) o;
         return Objects.equals(getPid(), image.getPid()) &&
                 Objects.equals(getWeiboId(), image.getWeiboId()) &&
+                Objects.equals(getRepostId(), image.getRepostId()) &&
                 Objects.equals(getImageInfoSmall(), image.getImageInfoSmall()) &&
                 Objects.equals(getImageInfoLarge(), image.getImageInfoLarge()) &&
                 Objects.equals(getText(), image.getText()) &&
