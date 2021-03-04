@@ -28,9 +28,7 @@ public class ImageTask {
     String regexPic = "“[0-9]”";
     String mainTag = "黄龄图集";
     SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
-    long fastTime = 1000;
-    long slowTime = 8000;
-    //long slowTime = 1000;
+    long fastTime = 100;
 
     @Scheduled(cron = "0 0 * * * ?")
     public void execute() {
@@ -110,7 +108,7 @@ public class ImageTask {
                             .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                             .header("MWeibo-Pwa","1")
                             .header("X-Requested-With", "XMLHttpRequest")
-                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), slowTime);
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), fastTime);
                     if (detailResponse == null)
                         return;
                     JSONObject detailJson;
@@ -178,7 +176,7 @@ public class ImageTask {
                                 .header("Referer", "https://m.weibo.cn/")
                                 .header("MWeibo-Pwa","1")
                                 .header("X-Requested-With", "XMLHttpRequest")
-                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), slowTime);
+                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), fastTime);
                         if (commentResponse == null)
                             return;
                         JSONObject commentJson;
