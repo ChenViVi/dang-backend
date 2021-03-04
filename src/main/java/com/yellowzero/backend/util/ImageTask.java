@@ -19,17 +19,14 @@ import java.util.Locale;
 
 public class ImageTask implements Task {
 
+    long uid = 7532254335L;
+    long containerId = 1076037532254335L;
+    String regexTag = "#[^#]+#";
+    String regexPic = "“[0-9]”";
+    String mainTag = "黄龄图集";
     SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
 
     public void execute() {
-
-        long uid = 7532254335L;
-        long containerId = 1076037532254335L;
-
-        String regexTag = "#[^#]+#";
-        String regexPic = "“[0-9]”";
-        String mainTag = "黄龄图集";
-
         int listPage = 1;
         while (true) {
             String listUrl = String.format("https://m.weibo.cn/api/container/getIndex?type=uid&value=%d&containerid=%d&page=%d",
@@ -218,7 +215,7 @@ public class ImageTask implements Task {
     private String startRequest(HttpRequest httpRequest){
         try {
             Thread.sleep(1000);
-            //System.out.println(httpRequest.getUrl());
+            System.out.println(httpRequest.getUrl());
             return httpRequest.execute().body();
         } catch (InterruptedException e) {
             e.printStackTrace();
