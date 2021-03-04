@@ -1,7 +1,6 @@
 package com.yellowzero.backend.util;
 
 import cn.hutool.core.util.ReUtil;
-import cn.hutool.cron.task.Task;
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 @Component
-public class ImageTask implements Task {
+public class ImageTask {
 
     long uid = 7532254335L;
     long containerId = 1076037532254335L;
@@ -30,8 +29,8 @@ public class ImageTask implements Task {
     String mainTag = "黄龄图集";
     SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
     long fastTime = 1000;
-    //long slowTime = 8000;
-    long slowTime = 1000;
+    long slowTime = 8000;
+    //long slowTime = 1000;
 
     @Scheduled(cron = "0 0 * * * ?")
     public void execute() {
