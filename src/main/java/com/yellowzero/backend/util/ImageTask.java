@@ -182,6 +182,8 @@ public class ImageTask implements Task {
                         catch (JSONException e) {
                             break;
                         }
+                        if (commentJson == null)
+                            break;
                         JSONArray commentListJson = commentJson.getJSONObject("data").getJSONArray("data");
                         if (commentListJson == null || commentListJson.size() == 0)
                             break;
