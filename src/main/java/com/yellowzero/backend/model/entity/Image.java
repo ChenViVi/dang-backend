@@ -18,7 +18,7 @@ public class Image {
     private long weiboId;
     private long repostId;
     @JsonIgnore
-    private int disable;
+    private boolean disable;
     @JsonIgnore
     private int imageInfoSmallId;
     @JsonIgnore
@@ -69,11 +69,11 @@ public class Image {
         this.repostId = repostId;
     }
 
-    public int getDisable() {
+    public boolean isDisable() {
         return disable;
     }
 
-    public void setDisable(int disable) {
+    public void setDisable(boolean disable) {
         this.disable = disable;
     }
 

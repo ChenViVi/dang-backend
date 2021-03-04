@@ -3,6 +3,8 @@ package com.yellowzero.backend.repository;
 import com.yellowzero.backend.model.entity.MusicTag;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MusicTagRepository extends JpaRepository<MusicTag, Integer> {
+import java.util.List;
 
+public interface MusicTagRepository extends JpaRepository<MusicTag, Integer> {
+    List<MusicTag> findByDisable(boolean disable);
 }

@@ -1,5 +1,7 @@
 package com.yellowzero.backend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -8,6 +10,8 @@ public class Music {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @JsonIgnore
+    private boolean disable;
     private String name;
     private String url;
     private String cover;
@@ -19,6 +23,14 @@ public class Music {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isDisable() {
+        return disable;
+    }
+
+    public void setDisable(boolean disable) {
+        this.disable = disable;
     }
 
     public String getName() {

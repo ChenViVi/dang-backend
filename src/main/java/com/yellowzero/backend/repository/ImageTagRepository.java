@@ -9,9 +9,9 @@ import java.util.List;
 public interface ImageTagRepository extends JpaRepository<ImageTag, Integer> {
     @Query(value = "SELECT * FROM image_tag " +
             "JOIN image_tag_join ON image_tag.id = image_tag_join.tag_id " +
-            "WHERE image_tag.disable = 0 " +
+            "WHERE image_tag.disable = false " +
             "AND image_tag_join.image_id = :imageId", nativeQuery = true)
     List<ImageTag> findByImageId(int imageId);
     
-    List<ImageTag> findByDisable(int disable);
+    List<ImageTag> findByDisable(boolean disable);
 }

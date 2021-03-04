@@ -21,7 +21,7 @@ public class MusicTagServiceImpl implements MusicTagService {
 
     @Override
     public List<MusicTag> getList() {
-        List<MusicTag> tagList = musicTagRepository.findAll();
+        List<MusicTag> tagList = musicTagRepository.findByDisable(false);
         for (MusicTag tag : tagList) {
             tag.setCount(musicRepository.countByTagId(tag.getId()));
             List<Music> musicList = musicRepository.findFirstById(tag.getId());

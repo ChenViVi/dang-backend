@@ -10,9 +10,9 @@ public class ImageTag {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private int id;
-    private String name;
     @JsonIgnore
-    private int disable;
+    private boolean disable;
+    private String name;
     @Transient
     private long count;
 
@@ -24,20 +24,20 @@ public class ImageTag {
         this.id = id;
     }
 
+    public boolean isDisable() {
+        return disable;
+    }
+
+    public void setDisable(boolean disable) {
+        this.disable = disable;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public int getDisable() {
-        return disable;
-    }
-
-    public void setDisable(int disable) {
-        this.disable = disable;
     }
 
     public long getCount() {
