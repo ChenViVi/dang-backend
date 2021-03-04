@@ -26,6 +26,9 @@ public class ImageTask implements Task {
     String regexPic = "“[0-9]”";
     String mainTag = "黄龄图集";
     SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy", Locale.ENGLISH);
+    long fastTime = 1000;
+    //long slowTime = 8000;
+    long slowTime = 1000;
 
     public void execute() {
         int listPage = 1;
@@ -38,7 +41,7 @@ public class ImageTask implements Task {
                     .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                     .header("MWeibo-Pwa","1")
                     .header("X-Requested-With", "XMLHttpRequest")
-                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), 1000);
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), fastTime);
             if (listResponse == null)
                 return;
             JSONObject listJson;
@@ -104,7 +107,7 @@ public class ImageTask implements Task {
                             .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                             .header("MWeibo-Pwa","1")
                             .header("X-Requested-With", "XMLHttpRequest")
-                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), 8000);
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), slowTime);
                     if (detailResponse == null)
                         return;
                     JSONObject detailJson;
@@ -172,7 +175,7 @@ public class ImageTask implements Task {
                                 .header("Referer", "https://m.weibo.cn/")
                                 .header("MWeibo-Pwa","1")
                                 .header("X-Requested-With", "XMLHttpRequest")
-                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), 8000);
+                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), slowTime);
                         if (commentResponse == null)
                             return;
                         JSONObject commentJson;
