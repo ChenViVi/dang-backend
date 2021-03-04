@@ -175,33 +175,30 @@ public class ImageTask implements Task {
                                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), 8000);
                         if (commentResponse == null)
                             return;
-                        JSONObject commentJson;
                         try {
-                            commentJson = JSON.parseObject(commentResponse);
+                            JSONObject commentJson = JSON.parseObject(commentResponse);
+                            JSONArray commentListJson = commentJson.getJSONObject("data").getJSONArray("data");
+                            if (commentListJson == null || commentListJson.size() == 0)
+                                break;
+                            for (int commentIndex = 0; commentIndex < commentListJson.size(); commentIndex++) {
+                                String commentText = commentListJson.getJSONObject(commentIndex).getString("text");
+                                List<String> commentTags = ReUtil.findAll(regexTag, commentText, 0);
+                                //保存评论中的tag
+                                mainTagIndex = -1;
+                                for (int commentTagIndex = 0; commentTagIndex < commentTags.size(); commentTagIndex++) {
+                                    String commentTag = commentTags.get(commentTagIndex).replaceAll("#", "");
+                                    commentTags.set(commentTagIndex, commentTag);
+                                    if (commentTag.equals(mainTag))
+                                        mainTagIndex = commentTagIndex;
+                                }
+                                //移除主标签
+                                if (mainTagIndex != -1)
+                                    commentTags.remove(mainTagIndex);
+                                DBUtil.saveImageAndTags(images, commentTags, false);
+                            }
                         }
                         catch (JSONException e) {
                             break;
-                        }
-                        if (commentJson == null)
-                            break;
-                        JSONArray commentListJson = commentJson.getJSONObject("data").getJSONArray("data");
-                        if (commentListJson == null || commentListJson.size() == 0)
-                            break;
-                        for (int commentIndex = 0; commentIndex < commentListJson.size(); commentIndex++) {
-                            String commentText = commentListJson.getJSONObject(commentIndex).getString("text");
-                            List<String> commentTags = ReUtil.findAll(regexTag, commentText, 0);
-                            //保存评论中的tag
-                            mainTagIndex = -1;
-                            for (int commentTagIndex = 0; commentTagIndex < commentTags.size(); commentTagIndex++) {
-                                String commentTag = commentTags.get(commentTagIndex).replaceAll("#", "");
-                                commentTags.set(commentTagIndex, commentTag);
-                                if (commentTag.equals(mainTag))
-                                    mainTagIndex = commentTagIndex;
-                            }
-                            //移除主标签
-                            if (mainTagIndex != -1)
-                                commentTags.remove(mainTagIndex);
-                            DBUtil.saveImageAndTags(images, commentTags, false);
                         }
                     }
                 }
