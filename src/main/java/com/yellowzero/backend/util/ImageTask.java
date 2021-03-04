@@ -5,6 +5,7 @@ import cn.hutool.cron.task.Task;
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.yellowzero.backend.model.entity.Image;
 import com.yellowzero.backend.model.entity.ImageInfo;
@@ -37,10 +38,16 @@ public class ImageTask implements Task {
                     .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                     .header("MWeibo-Pwa","1")
                     .header("X-Requested-With", "XMLHttpRequest")
-                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"));
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), 1000);
             if (listResponse == null)
                 return;
-            JSONObject listJson = JSON.parseObject(listResponse);
+            JSONObject listJson;
+            try {
+                listJson = JSON.parseObject(listResponse);
+            }
+            catch (JSONException e) {
+                return;
+            }
             if (listJson.getInteger("ok") != 1)
                 return;
             JSONArray cardsJson = listJson.getJSONObject("data").getJSONArray("cards");
@@ -97,12 +104,18 @@ public class ImageTask implements Task {
                             .header("Referer", String.format("https://m.weibo.cn/u/%d", uid))
                             .header("MWeibo-Pwa","1")
                             .header("X-Requested-With", "XMLHttpRequest")
-                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"));
+                            .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), 8000);
                     if (detailResponse == null)
                         return;
-                    JSONObject detailJson = JSON.parseObject(detailResponse);
-                    if (detailJson.getInteger("ok") == 1)
-                        repostText = detailJson.getJSONObject("data").getString("text");
+                    JSONObject detailJson;
+                    try {
+                        detailJson = JSON.parseObject(detailResponse);
+                        if (detailJson.getInteger("ok") == 1)
+                            repostText = detailJson.getJSONObject("data").getString("text");
+                    }
+                    catch (JSONException e) {
+
+                    }
                     Timestamp timestamp = null;
                     try {
                         timestamp = new Timestamp(dateFormat.parse(time).getTime());
@@ -159,12 +172,16 @@ public class ImageTask implements Task {
                                 .header("Referer", "https://m.weibo.cn/")
                                 .header("MWeibo-Pwa","1")
                                 .header("X-Requested-With", "XMLHttpRequest")
-                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"));
+                                .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36"), 8000);
                         if (commentResponse == null)
                             return;
-                        JSONObject commentJson = JSON.parseObject(commentResponse);
-                        if (commentJson.getInteger("ok") != 1)
+                        JSONObject commentJson;
+                        try {
+                            commentJson = JSON.parseObject(commentResponse);
+                        }
+                        catch (JSONException e) {
                             break;
+                        }
                         JSONArray commentListJson = commentJson.getJSONObject("data").getJSONArray("data");
                         if (commentListJson == null || commentListJson.size() == 0)
                             break;
@@ -212,9 +229,9 @@ public class ImageTask implements Task {
         image.setImageInfoSmall(imageInfoSmall);
     }
 
-    private String startRequest(HttpRequest httpRequest){
+    private String startRequest(HttpRequest httpRequest, long time){
         try {
-            Thread.sleep(1000);
+            Thread.sleep(time);
             System.out.println(httpRequest.getUrl());
             return httpRequest.execute().body();
         } catch (InterruptedException e) {
