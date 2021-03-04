@@ -10,6 +10,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.yellowzero.backend.model.entity.Image;
 import com.yellowzero.backend.model.entity.ImageInfo;
 import com.yellowzero.backend.model.entity.UserWeibo;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Component
 public class ImageTask implements Task {
 
     long uid = 7532254335L;
@@ -30,6 +33,7 @@ public class ImageTask implements Task {
     //long slowTime = 8000;
     long slowTime = 1000;
 
+    @Scheduled(cron = "0 0 * * * ?")
     public void execute() {
         int listPage = 1;
         while (true) {

@@ -62,11 +62,6 @@
         </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
-            <artifactId>hutool-cron</artifactId>
-            <version>5.4.1</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
             <artifactId>hutool-http</artifactId>
             <version>5.4.1</version>
         </dependency>
